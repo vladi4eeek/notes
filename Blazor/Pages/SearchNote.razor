@@ -1,0 +1,73 @@
+﻿@page "/SearchNote"
+@using Domain.Model
+@using System.Linq
+@using Microsoft.EntityFrameworkCore
+@using Context
+@inject AppDbContext _context
+@inject NavigationManager NavigationManager
+
+
+<input type="text" @bind="searchTerm" placeholder="Enter The Word Fo Searching">
+<button type="button" class="btn btn-primary btn-sm" @onclick="Search">Search</button>
+
+<hr />
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Note Id</th>
+            <th>Note Title</th>
+            <th>Note Content</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var note in filteredNotes)
+        {
+            <tr>
+                <td>@note.Id</td>
+                <td>@note.Title</td>
+                <td>@note.Content</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <input type="button" class="btn btn-primary btn-sm" @onclick="@HideNoteAsync" value="Hide Search" />
+
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private string searchTerm = "";
+    private List<Note> notes = new List<Note>();
+
+    private List<Note> filteredNotes = new List<Note>();
+
+    private void Search()
+    {
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            //   perform a search in the Notes table by words in the title or text
+            filteredNotes = _context.Notes
+            .Where(note => note.Title.Contains(searchTerm) || note.Content.Contains(searchTerm))
+            .ToList();
+        }
+        else
+        {
+            // If the search query is empty, we show all notes
+            filteredNotes = _context.Notes.ToList();
+        }
+    }
+
+    protected async void HideNoteAsync()
+    {
+
+        NavigationManager.NavigateTo("Notes");
+    }
+}

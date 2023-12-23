@@ -1,0 +1,94 @@
+﻿@page "/Notes"
+@using Domain.Model
+@using Application.Service
+@inject NoteService noteService
+
+<div class="d-flex justify-content-between">
+    <a class="btn btn-primary btn-sm" href="AddNewNote" style="width: 100px;">
+        <span class="oi oi-plus" aria-hidden="true"></span> New Note
+    </a>
+    <a class="btn btn-primary btn-sm" href="SearchNote" style="width: 100%; text-align: center;">
+        <span class="oi oi-magnifying-glass" aria-hidden="true"></span> Search Notes
+    </a>
+</div>
+
+<hr />
+
+<h3>NotesList</h3>
+
+@if (NtObj is null)
+{
+    <p><em> Loading..............</em></p>
+}
+else
+{
+    <div>
+        <p>Total Notes: @NtObj.Count</p>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Number Note
+                </th>
+                <th>
+                    Note Title
+                </th>
+                <th>
+                    Data Create
+                </th>
+                <th>
+                    View Note
+                </th>
+
+                <th>
+                    Edit Note
+                </th>
+                <th>
+                    Delete Note
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var note in NtObj)
+            {
+                <tr>
+                    <td>
+                        @note.Id
+                    </td>
+                    <td>
+                        @note.Title
+                    </td>
+                    <td>
+                        @note.DateCreate
+                    </td>
+
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="ViewNote/@note.Id">
+                            <span aria-hidden="true">View Note</span>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="EditNote/@note.Id">
+                            <span aria-hidden="true">Edit Note </span>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="DeleteNote/@note.Id">
+                            <span aria-hidden="true">Delete Note </span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<Note> NtObj;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NtObj = await Task.Run(() => noteService.GetAllNotesAsync());
+    }
+}
